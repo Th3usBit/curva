@@ -1,0 +1,15 @@
+[project]
+name = "curva"
+version = "1.0.0"
+description = "Curva de juros e simulador do Tesouro Direto com os dados oficiais do Tesouro Nacional"
+requires-python = ">=3.11"
+license = "MIT"
+# Sem dependencias: o site e construido so com a biblioteca padrao.
+dependencies = []
+
+[project.optional-dependencies]
+testes = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

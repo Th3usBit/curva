@@ -1,0 +1,75 @@
+# Baixa o arquivo do Tesouro, testa, gera os dados e publica o site no GitHub Pages.
+#
+# O repositorio nao guarda dados: site/dados/ e gerado aqui, a cada execucao, e
+# vai direto para o artefato do Pages. Se o download falhar, ou o modelo nao
+# reproduzir os precos do ultimo dia, o job falha e o site anterior continua no
+# ar -- melhor um dia atrasado do que um numero errado. A pagina mostra a data
+# dos precos e avisa quando ela passa de 6 dias.
+#
+# Duas coisas para saber sobre o agendamento:
+#   * O GitHub desliga workflows agendados de repositorios publicos depois de
+#     60 dias sem atividade. Para religar: aba Actions ou
+#     `gh workflow enable "Publicar no Pages"`.
+#   * Execucoes agendadas nao sao garantidas (o GitHub descarta algumas nos
+#     horarios cheios). Por isso o cron pede seis por dia, no minuto 17.
+
+name: Publicar no Pages
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 1,9,13,16,19,22 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  construir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Testes
+        run: |
+          pip install pytest
+          python -m pytest -q
+          npm test
+
+      # So biblioteca padrao: nenhum pip install para construir o site.
+      - name: Baixar o arquivo do Tesouro e gerar os dados
+        run: python scripts/construir.py
+
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  publicar:
+    needs: construir
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

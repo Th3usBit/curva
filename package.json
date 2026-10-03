@@ -1,0 +1,9 @@
+{
+  "name": "curva",
+  "private": true,
+  "type": "module",
+  "description": "Testes do JavaScript do site (node --test, sem dependencias).",
+  "scripts": {
+    "test": "node --test tests/js/precos.test.mjs tests/js/rendeu.test.mjs tests/js/formato.test.mjs"
+  }
+}

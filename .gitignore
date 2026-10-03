@@ -1,0 +1,7 @@
+# Gerado pelo scripts/construir.py (localmente e no GitHub Actions); nunca versionado.
+site/dados/
+__pycache__/
+.pytest_cache/
+*.tmp
+*.csv
+!tests/fixtures/*.csv

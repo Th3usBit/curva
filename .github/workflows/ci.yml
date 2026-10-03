@@ -1,0 +1,36 @@
+# Testes em todo push e pull request, sem rede: o modelo roda contra a amostra
+# de precos oficiais em tests/fixtures/.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  testes:
+    name: Testes em ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: pip install pytest
+      - run: python -m pytest -q
+      - run: npm test
+      - name: Construir o site a partir da amostra
+        run: python scripts/construir.py --arquivo tests/fixtures/amostra.csv --destino site/dados
