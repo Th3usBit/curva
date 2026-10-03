@@ -4,8 +4,7 @@ Saidas (em site/dados/):
 
   resumo.json         titulos a venda no ultimo dia, com fluxos futuros em dias
                       uteis, VNA de cada indexador e a tabela de dias uteis por
-                      mes -- tudo o que o simulador "E se?" precisa no navegador
-  curvas.json         curva prefixada e curva real (IPCA+) no fim de cada mes
+                      mes -- tudo o que a aba "Simular" precisa no navegador
   vna.json            VNA implicito de cada indexador, dia a dia (da a Selic e o
                       IPCA acumulados entre duas datas quaisquer)
   titulos.json        catalogo de todos os titulos que ja existiram
@@ -131,42 +130,6 @@ def _resumo(ultimo: Dia, cs: list[Cotacao], validacao: dict) -> dict:
     }
 
 
-def _ponto_curva(c: Cotacao, d: Dia) -> list[float] | None:
-    if c.pu_venda <= 0:
-        return None
-    taxa = c.taxa_compra if c.pu_compra > 0 else c.taxa_venda
-    k = fluxos_futuros(c.tipo, c.vencimento, d.liq_compra)
-    if not k:
-        return None
-    anos = dias_uteis(d.liq_compra, k[-1].data, d.data) / 252
-    dur = duration(c.tipo, c.vencimento, d.liq_compra, taxa / 100, d.data)
-    return [_r(anos, 3), _r(dur, 3), taxa, c.tipo.codigo, c.vencimento.isoformat()]
-
-
-def _curvas(dias: list[Dia], por_dia: dict[date, list[Cotacao]]) -> dict:
-    """Curva prefixada e real no ultimo dia util de cada mes (e no ultimo dia)."""
-    ultimos_do_mes: dict[tuple[int, int], Dia] = {}
-    for d in dias:
-        if d.consistente:
-            ultimos_do_mes[(d.data.year, d.data.month)] = d
-    escolhidos = sorted(ultimos_do_mes.values(), key=lambda d: d.data)
-    if dias[-1] not in escolhidos:
-        escolhidos.append(dias[-1])
-    out = []
-    for d in escolhidos:
-        pre, real = [], []
-        for c in por_dia[d.data]:
-            p = _ponto_curva(c, d)
-            if p is None:
-                continue
-            if c.tipo.codigo in ("LTN", "NTN-F"):
-                pre.append(p)
-            elif c.tipo.codigo in ("NTN-B Principal", "NTN-B"):
-                real.append(p)
-        out.append({"data": d.data.isoformat(), "pre": sorted(pre), "real": sorted(real)})
-    return {"colunas": ["anos_ate_vencimento", "duration", "taxa", "codigo", "vencimento"], "curvas": out}
-
-
 def _serie_vna(dias: list[Dia]) -> dict:
     """VNA por data de liquidacao da venda: o valor do indexador naquele dia."""
     pontos: dict[date, dict[str, float]] = {}
@@ -256,7 +219,6 @@ def construir(cotacoes: list[Cotacao], destino: Path) -> dict:
 
     resumo = _resumo(ultimo, por_dia[ultimo.data], validacao)
     _gravar(destino / "resumo.json", resumo)
-    _gravar(destino / "curvas.json", _curvas(dias, por_dia))
     _gravar(destino / "vna.json", _serie_vna(dias))
     _gravar(destino / "validacao.json", validacao)
 

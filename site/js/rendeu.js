@@ -1,4 +1,4 @@
-// "Quanto rendeu": uma compra real no passado, com os precos oficiais do dia,
+// "Quanto eu teria": uma compra real no passado, com os precos oficiais do dia,
 // os pagamentos que o titulo fez no caminho e os custos de quem investe pelo
 // Tesouro Direto. Tudo aqui e funcao pura; quem desenha e app.js.
 

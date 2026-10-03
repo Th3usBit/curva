@@ -113,7 +113,7 @@ def test_construir_gera_os_arquivos(tmp_path):
     resumo = json.loads((tmp_path / "resumo.json").read_text(encoding="utf-8"))
     assert len(resumo["titulos"]) == 58
     assert resumo["du_mes"][0] == 0 and resumo["du_mes"][12] in range(248, 256)
-    for nome in ("curvas.json", "vna.json", "titulos.json", "validacao.json"):
+    for nome in ("vna.json", "titulos.json", "validacao.json"):
         assert (tmp_path / nome).exists()
     hist = json.loads((tmp_path / "historico" / "prefixado-2032-01-01.json").read_text(encoding="utf-8"))
     assert hist["nome"] == "Tesouro Prefixado 2032"

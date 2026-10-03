@@ -6,18 +6,18 @@ Tesouro Nacional. Não usa servidor, chave de API nem banco de dados.
 
 **Site:** https://th3usbit.github.io/curva/
 
-![Simulador "E se eu vender antes?"](docs/e-se.png)
+![Simular uma compra](docs/simular.png)
 
 ## O que tem no site
 
 | Aba | Para quê |
 |---|---|
-| **Hoje** | Taxa, preço e prazo médio de todos os títulos à venda, mais quanto cada um cai se os juros subirem 1 ponto. Toque num título para ver o histórico de taxa e preço. |
-| **Curva de juros** | Curva prefixada, curva real (IPCA+) e inflação implícita, comparadas com 1 mês a 10 anos atrás. |
-| **E se?** | Compre hoje, escolha quando vender e quanto os juros mudam até lá: veja quanto recebe, comparado com segurar até o vencimento. Explica a marcação a mercado. |
-| **Quanto rendeu** | Uma compra de verdade no passado, com os preços oficiais de cada dia, cupons, IR, IOF e custódia, comparada com o Tesouro Selic e a inflação do período. |
-| **Como funciona** | O que é marcação a mercado, os tipos de título, a curva e a inflação implícita, com exemplos tirados dos dados do dia. |
-| **Metodologia** | De onde vêm os dados e quanto o modelo acerta dos preços oficiais. |
+| **Títulos de hoje** | Quanto cada título rende por ano, quanto custa e quando vence. Escolha um para ver como o preço mudou. |
+| **Simular** | "Se eu comprar hoje e vender daqui a 2 anos, quanto recebo?" Depende de os juros subirem, caírem ou ficarem iguais até lá. |
+| **Quanto eu teria** | "Se eu tivesse comprado em 2023, quanto teria hoje?" Com os preços oficiais de cada dia, já descontando imposto e taxa da B3, comparado com o Tesouro Selic e a inflação. |
+
+No celular as abas ficam numa barra fixa embaixo, na zona do polegar. No computador ficam no topo.
+A conta por trás está em [Como os números são calculados](https://th3usbit.github.io/curva/#metodologia).
 
 ## Como fica no ar sem servidor
 
@@ -54,7 +54,7 @@ concordar sobre ele. O modelo é testado contra os 176.844 preços oficiais desd
 | Tesouro Selic | 21.416 | R$ 0,003 | 71,8% | 74,5% |
 
 O Tesouro Selic fica atrás porque a taxa é publicada com duas casas, e esse arredondamento
-explica o erro restante. Os outros casos estão em [Metodologia](https://th3usbit.github.io/curva/#metodologia).
+explica o erro restante. Os outros casos estão em [Como os números são calculados](https://th3usbit.github.io/curva/#metodologia).
 
 ### O que os dados revelaram
 

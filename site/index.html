@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>curva · Tesouro Direto com dados de hoje</title>
-  <meta name="description" content="Curva de juros, preços e simulador do Tesouro Direto com os dados oficiais do Tesouro Nacional, atualizados todo dia útil. Entenda a marcação a mercado: quanto o seu título vale hoje e o que acontece se você vender antes do vencimento.">
+  <meta name="description" content="Veja os títulos do Tesouro Direto de hoje, simule quanto recebe se vender antes e confira quanto teria hoje se tivesse comprado no passado. Dados oficiais do Tesouro Nacional, atualizados todo dia útil.">
   <meta name="theme-color" content="#f7f7f4" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#121211" media="(prefers-color-scheme: dark)">
   <meta property="og:title" content="curva · Tesouro Direto com dados de hoje">
-  <meta property="og:description" content="Quanto o seu título do Tesouro vale hoje, o que acontece se vender antes e como está a curva de juros. Dados oficiais, atualizados todo dia útil.">
+  <meta property="og:description" content="Títulos de hoje, simulador de venda e quanto você teria hoje. Dados oficiais, atualizados todo dia útil.">
   <meta property="og:type" content="website">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/curva.css">
@@ -26,45 +26,43 @@
         <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><path d="M4 26 C 10 25, 12 12, 28 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="28" cy="7" r="3" fill="currentColor"/></svg>
         <span>curva</span>
       </a>
-      <p class="lema">Tesouro Direto com os dados oficiais de hoje</p>
+      <nav class="abas" aria-label="Principal">
+        <a href="#hoje" data-aba="hoje">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+          <span>Títulos de hoje</span>
+        </a>
+        <a href="#simular" data-aba="simular">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+          <span>Simular</span>
+        </a>
+        <a href="#quanto-teria" data-aba="quanto-teria">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v4h4"/><path d="M12 7v5l3 2"/></svg>
+          <span>Quanto eu teria</span>
+        </a>
+      </nav>
       <button class="tema" type="button" aria-label="Alternar tema claro e escuro" title="Alternar tema">
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z" fill="currentColor"/></svg>
       </button>
     </div>
-    <nav class="abas" aria-label="Seções">
-      <a href="#hoje" data-aba="hoje">Hoje</a>
-      <a href="#curva" data-aba="curva">Curva de juros</a>
-      <a href="#e-se" data-aba="e-se">E se?</a>
-      <a href="#rendeu" data-aba="rendeu">Quanto rendeu</a>
-      <a href="#como-funciona" data-aba="como-funciona">Como funciona</a>
-      <a href="#metodologia" data-aba="metodologia">Metodologia</a>
-    </nav>
   </header>
 
   <div class="faixa" id="faixa" role="status">Carregando os dados do Tesouro…</div>
 
   <main id="conteudo">
-    <!-- HOJE -->
+    <!-- TITULOS DE HOJE -->
     <section id="hoje" class="aba" aria-labelledby="t-hoje">
-      <h1 id="t-hoje">Os títulos do Tesouro Direto hoje</h1>
-      <p class="intro">Taxas e preços oficiais de todos os títulos à venda. Toque num título para ver o histórico dele. A coluna da direita mostra o risco que quase ninguém vê: quanto o preço cai se os juros do mercado subirem 1 ponto percentual.</p>
-      <div class="tiles" id="tiles"></div>
+      <h1 id="t-hoje" tabindex="-1">Títulos do Tesouro Direto hoje</h1>
+      <p class="intro">Quanto cada título rende por ano e quanto custa hoje. Escolha um título para ver como o preço dele mudou.</p>
       <div class="filtros" role="group" aria-label="Filtrar por tipo" id="filtros"></div>
       <div class="painel" id="detalhe" hidden>
         <div class="painel-cab">
           <h2 id="detalhe-titulo"></h2>
           <div class="periodos" role="group" aria-label="Período" id="detalhe-periodos"></div>
         </div>
-        <div class="dupla">
-          <figure>
-            <figcaption>Taxa de compra (% ao ano)</figcaption>
-            <div id="g-taxa"></div>
-          </figure>
-          <figure>
-            <figcaption>Preço de venda ao Tesouro (R$ por título)</figcaption>
-            <div id="g-preco"></div>
-          </figure>
-        </div>
+        <figure>
+          <figcaption>Preço de um título (R$)</figcaption>
+          <div id="g-preco"></div>
+        </figure>
         <p class="nota" id="detalhe-nota"></p>
       </div>
       <div class="rolagem tabela-titulos">
@@ -72,149 +70,79 @@
           <thead>
             <tr>
               <th scope="col">Título</th>
-              <th scope="col" class="num">Taxa de compra</th>
-              <th scope="col" class="num">Preço</th>
-              <th scope="col" class="num col-prazo">Prazo médio</th>
-              <th scope="col" class="num"><span class="quebra">Se os juros</span> subirem 1 p.p.</th>
-              <th scope="col" class="col-ver"><span class="vh">Histórico</span></th>
+              <th scope="col" class="num">Rende por ano</th>
+              <th scope="col" class="num">Preço hoje</th>
+              <th scope="col" class="num col-vence">Vence em</th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
       </div>
-      <p class="nota">Taxa de compra: o que o Tesouro paga a quem compra hoje e segura até o vencimento. Preço: quanto custa um título inteiro (dá para comprar frações a partir de 1%). Prazo médio: a <em>duration</em>, o prazo médio dos pagamentos ponderado pelo valor. Quanto maior, mais o preço reage aos juros.</p>
-
+      <p class="nota">"Rende por ano" vale para quem fica com o título até o vencimento. Dá para comprar um pedaço do título, a partir de 1% do preço.</p>
     </section>
 
-    <!-- CURVA -->
-    <section id="curva" class="aba" aria-labelledby="t-curva" hidden>
-      <h1 id="t-curva">A curva de juros</h1>
-      <p class="intro">Quanto o Tesouro paga para cada prazo. A curva prefixada mostra os juros nominais; a real mostra o ganho acima da inflação; a diferença entre as duas é a inflação que o mercado espera.</p>
-      <div class="filtros" role="group" aria-label="Comparar com" id="comparar"></div>
-      <div class="dupla">
-        <figure>
-          <figcaption>Curva prefixada <span class="sub">(% ao ano × prazo médio em anos)</span></figcaption>
-          <div id="g-curva-pre"></div>
-        </figure>
-        <figure>
-          <figcaption>Curva real, acima do IPCA <span class="sub">(% ao ano × prazo médio em anos)</span></figcaption>
-          <div id="g-curva-real"></div>
-        </figure>
-      </div>
-      <figure>
-        <figcaption>Inflação implícita <span class="sub">(IPCA médio por ano que iguala o Prefixado e o IPCA+ do mesmo prazo)</span></figcaption>
-        <div id="g-implicita"></div>
-      </figure>
-      <p class="nota" id="curva-nota"></p>
-    </section>
-
-    <!-- E SE -->
-    <section id="e-se" class="aba" aria-labelledby="t-ese" hidden>
-      <h1 id="t-ese">E se eu vender antes?</h1>
-      <p class="intro">A taxa do título só é garantida para quem segura até o vencimento. Quem vende antes recebe o preço do dia, que depende dos juros daquele dia. Escolha um título e veja o que acontece.</p>
-      <form class="formulario" id="form-ese" autocomplete="off">
+    <!-- SIMULAR -->
+    <section id="simular" class="aba" aria-labelledby="t-simular" hidden>
+      <h1 id="t-simular" tabindex="-1">Simular uma compra</h1>
+      <p class="intro">Se você comprar hoje e precisar vender antes do vencimento, quanto recebe? Depende dos juros do mercado no dia da venda.</p>
+      <form class="formulario" id="form-simular" autocomplete="off">
         <label>Título
-          <select id="ese-titulo"></select>
+          <select id="s-titulo"></select>
         </label>
-        <label>Valor investido hoje
-          <span class="campo-prefixo"><span>R$</span><input id="ese-valor" type="number" min="100" step="100" value="10000" inputmode="decimal"></span>
+        <label>Quanto vou investir
+          <span class="campo-prefixo"><span>R$</span><input id="s-valor" type="number" min="100" step="100" value="10000" inputmode="decimal"></span>
         </label>
-        <label>Vender daqui a <output id="ese-meses-txt"></output>
-          <input id="ese-meses" type="range" min="1" max="120" step="1" value="24">
+        <label>Vender daqui a <output id="s-meses-txt"></output>
+          <input id="s-meses" type="range" min="1" max="120" step="1" value="24">
         </label>
-        <label>Mudança nos juros até lá <output id="ese-choque-txt"></output>
-          <input id="ese-choque" type="range" min="-5" max="5" step="0.25" value="1">
-        </label>
-        <label id="ese-inflacao-campo">Inflação média por ano (premissa)
-          <span class="campo-sufixo"><input id="ese-inflacao" type="number" step="0.1" inputmode="decimal"><span>% a.a.</span></span>
-          <small id="ese-inflacao-dica"></small>
-        </label>
-        <label id="ese-selic-campo">Selic média por ano (premissa)
-          <span class="campo-sufixo"><input id="ese-selic" type="number" step="0.1" inputmode="decimal"><span>% a.a.</span></span>
-          <small id="ese-selic-dica"></small>
+        <label>Até lá, os juros do mercado…
+          <select id="s-juros">
+            <option value="-2">caem bastante (−2 pontos)</option>
+            <option value="-1">caem um pouco (−1 ponto)</option>
+            <option value="0">ficam iguais</option>
+            <option value="1" selected>sobem um pouco (+1 ponto)</option>
+            <option value="2">sobem bastante (+2 pontos)</option>
+          </select>
         </label>
       </form>
-      <div class="resultado" id="ese-resultado" aria-live="polite"></div>
-      <div class="dupla">
-        <figure>
-          <figcaption>Quanto você recebe vendendo na data escolhida, conforme os juros mudam</figcaption>
-          <div id="g-ese-choque"></div>
-        </figure>
-        <figure>
-          <figcaption>Quanto vale o investimento ao longo do tempo <span class="sub">(a mudança acontece já e fica assim)</span></figcaption>
-          <div id="g-ese-tempo"></div>
-        </figure>
-      </div>
-      <p class="nota">Valores antes do imposto de renda e da taxa de custódia. Cupons e parcelas recebidos no caminho entram pelo valor nominal, sem reinvestir. A taxa de venda de hoje já inclui a diferença entre o preço de compra e o de recompra do Tesouro.</p>
+      <div class="resultado" id="s-resultado" aria-live="polite"></div>
+      <figure>
+        <figcaption>Quanto o investimento vale em cada mês</figcaption>
+        <div id="g-simular"></div>
+      </figure>
+      <p class="nota" id="s-nota"></p>
     </section>
 
-    <!-- QUANTO RENDEU -->
-    <section id="rendeu" class="aba" aria-labelledby="t-rendeu" hidden>
-      <h1 id="t-rendeu">Quanto rendeu de verdade?</h1>
-      <p class="intro">Escolha um título, a data da compra e a da venda. A conta usa os preços oficiais de cada dia, os cupons pagos, o imposto de renda, o IOF e a taxa de custódia, e compara com o Tesouro Selic e a inflação no mesmo período.</p>
-      <form class="formulario" id="form-rendeu" autocomplete="off">
+    <!-- QUANTO EU TERIA -->
+    <section id="quanto-teria" class="aba" aria-labelledby="t-teria" hidden>
+      <h1 id="t-teria" tabindex="-1">Quanto eu teria hoje?</h1>
+      <p class="intro">Escolha um título e quando teria comprado. A conta usa os preços oficiais de cada dia e já desconta imposto de renda e taxa da B3.</p>
+      <form class="formulario" id="form-teria" autocomplete="off">
         <label>Título
           <select id="r-titulo"></select>
         </label>
-        <label>Valor investido
+        <label>Quanto teria investido
           <span class="campo-prefixo"><span>R$</span><input id="r-valor" type="number" min="100" step="100" value="10000" inputmode="decimal"></span>
         </label>
-        <label>Data da compra
+        <label>Comprado em
           <input id="r-compra" type="date">
         </label>
-        <label>Data da venda
+        <label>Vendido em
           <input id="r-venda" type="date">
-          <small>Depois do vencimento, conta como se tivesse segurado até o fim.</small>
-        </label>
-        <label>Taxa de custódia da B3
-          <span class="campo-sufixo"><input id="r-custodia" type="number" min="0" max="2" step="0.05" value="0.20" inputmode="decimal"><span>% a.a.</span></span>
         </label>
       </form>
       <div class="resultado" id="r-resultado" aria-live="polite"></div>
       <figure>
-        <figcaption>Valor bruto do investimento, dia a dia</figcaption>
-        <div id="g-rendeu"></div>
+        <figcaption>Como o dinheiro evoluiu</figcaption>
+        <div id="g-teria"></div>
       </figure>
-      <p class="nota">Estimativa simplificada: o IR incide sobre cada cupom recebido e sobre o ganho na venda, pela tabela regressiva (22,5% até 180 dias, 20% até 360, 17,5% até 720 e 15% depois). O IOF vale só nos primeiros 29 dias. A custódia é cobrada sobre o saldo médio. O Tesouro Selic tem isenção de custódia até R$ 10 mil, e as regras já mudaram ao longo dos anos. Confira sempre no extrato da sua corretora.</p>
-    </section>
-
-    <!-- COMO FUNCIONA -->
-    <section id="como-funciona" class="aba texto" aria-labelledby="t-como" hidden>
-      <h1 id="t-como">Como funciona</h1>
-
-      <h2>O que é um título do Tesouro</h2>
-      <p>Comprar um título é emprestar dinheiro ao governo. Em troca, ele promete pagamentos futuros: um valor no vencimento e, em alguns títulos, juros a cada seis meses (os cupons). O preço de hoje é simplesmente quanto valem hoje esses pagamentos futuros.</p>
-
-      <h2>Por que o preço muda todo dia</h2>
-      <p>Os pagamentos de um título prefixado são fixos. O que muda é a taxa que o mercado exige para emprestar ao governo. Se essa taxa sobe, um título antigo, que paga a taxa velha e menor, passa a valer menos: ninguém pagaria o mesmo por ele, porque um título novo paga mais. Isso é a <strong>marcação a mercado</strong>.</p>
-      <p class="exemplo" id="exemplo-marcacao"></p>
-      <p>Quem segura até o vencimento não sente nada disso e recebe exatamente a taxa contratada. Quem precisa vender antes recebe o preço do dia, que pode ser maior ou menor do que o pago. Por isso a reserva de emergência fica no Tesouro Selic, cujo preço quase não oscila.</p>
-
-      <h2>Os tipos de título</h2>
-      <dl class="tipos">
-        <dt>Tesouro Selic</dt><dd>Acompanha a taxa básica de juros. O preço quase não oscila, e é o título para a reserva de emergência.</dd>
-        <dt>Tesouro Prefixado</dt><dd>Taxa fixa, conhecida no dia da compra. Paga tudo no vencimento. Ganha quando os juros caem e perde quando sobem.</dd>
-        <dt>Tesouro Prefixado com Juros Semestrais</dt><dd>Igual ao Prefixado, mas paga 10% ao ano de cupom, a cada seis meses.</dd>
-        <dt>Tesouro IPCA+</dt><dd>Paga a inflação mais uma taxa fixa, tudo no vencimento. É o que mais oscila, porque os prazos são longos.</dd>
-        <dt>Tesouro IPCA+ com Juros Semestrais</dt><dd>Inflação mais taxa fixa, com cupom de 6% ao ano sobre o valor corrigido.</dd>
-        <dt>Tesouro Renda+ e Educa+</dt><dd>Corrigidos pelo IPCA e pagos em parcelas mensais: 240 no Renda+ (20 anos de "aposentadoria extra"), 60 no Educa+ (5 anos de faculdade). O ano do nome é o do início dos pagamentos.</dd>
-      </dl>
-
-      <h2>Taxa de compra e taxa de venda</h2>
-      <p>O Tesouro vende por uma taxa e recompra por outra, um pouco maior. Na prática, quem vende no mesmo dia em que comprou recebe um pouco menos do que pagou. É o "spread" do Tesouro Direto.</p>
-
-      <h2>A curva de juros</h2>
-      <p>Cada prazo tem a sua taxa. Juntar os pontos dá a curva de juros, um retrato do que o mercado espera dos juros e da inflação. Curva subindo: o mercado acha que os juros vão subir ou cobra mais para emprestar por mais tempo. A diferença entre a curva prefixada e a real é a <strong>inflação implícita</strong>, a inflação que deixa um Prefixado e um IPCA+ do mesmo prazo empatados. Se você espera inflação maior do que ela, o IPCA+ é melhor negócio. Se espera menor, o Prefixado.</p>
-
-      <h2>Impostos e custos</h2>
-      <p>Imposto de renda sobre o ganho, tabela regressiva: 22,5% até 180 dias, 20% até 360, 17,5% até 720 e 15% depois disso. IOF só se vender antes de 30 dias. Taxa de custódia da B3 sobre o valor investido, hoje de 0,20% ao ano, com isenção no Tesouro Selic até R$ 10 mil.</p>
-
-      <p class="aviso">Este site é educativo. Não é recomendação de investimento.</p>
+      <p class="nota">Conta aproximada: imposto de renda pela tabela regressiva (de 22,5% a 15%, conforme o tempo), IOF nos primeiros 30 dias e taxa de custódia da B3 de 0,20% ao ano. Confira sempre no extrato da sua corretora.</p>
     </section>
 
     <!-- METODOLOGIA -->
     <section id="metodologia" class="aba texto" aria-labelledby="t-metodo" hidden>
-      <h1 id="t-metodo">Metodologia</h1>
+      <a class="voltar" href="#hoje">← Voltar</a>
+      <h1 id="t-metodo" tabindex="-1">Como os números são calculados</h1>
       <h2>De onde vêm os dados</h2>
       <p>Do arquivo <a href="https://www.tesourotransparente.gov.br/ckan/dataset/taxas-dos-titulos-ofertados-pelo-tesouro-direto" rel="noopener">Taxas dos Títulos Ofertados pelo Tesouro Direto</a>, publicado pelo Tesouro Nacional como dado aberto: taxas e preços de compra e venda de todos os títulos, todo dia útil, desde 2004. Não existe servidor: um robô do GitHub baixa o arquivo várias vezes por dia, recalcula tudo e publica este site estático.</p>
 
@@ -234,15 +162,15 @@
         <li>Tesouro Selic: a taxa é publicada com duas casas, e o arredondamento explica quase todo o erro restante (até alguns reais num título de R$ 18 mil).</li>
         <li>Tesouro IGP-M+ com vencimento em 2006: não se reproduz com nenhum cupom razoável. Ele venceu em 2006, e o único IGP-M+ ainda negociado (2031) fecha.</li>
         <li>Tesouro Prefixado com Juros Semestrais: 57 preços entre 2006 e 2010, a maioria na segunda quinzena de junho de 2008, erram o valor de um cupom. Tudo indica uma regra de "ex-cupom" usada naqueles dias. Nada parecido aparece depois de 2010.</li>
-        <li>Imposto e custódia no simulador "Quanto rendeu" são estimativas simplificadas.</li>
+        <li>Imposto e custódia em "Quanto eu teria" são estimativas simplificadas.</li>
       </ul>
       <p>Código aberto, com testes: <a id="link-codigo" href="https://github.com/Th3usBit/curva" rel="noopener">github.com/Th3usBit/curva</a>.</p>
     </section>
   </main>
 
   <footer class="rodape">
-    <p>Dados: Tesouro Nacional (dados abertos). Não é recomendação de investimento.</p>
-    <p><a href="https://github.com/Th3usBit/curva" rel="noopener">Código no GitHub</a> · licença MIT</p>
+    <p>Dados oficiais do Tesouro Nacional, atualizados todo dia útil. Não é recomendação de investimento.</p>
+    <p><a href="#metodologia">Como os números são calculados</a> · <a href="https://github.com/Th3usBit/curva" rel="noopener">Código no GitHub</a> · licença MIT</p>
   </footer>
 </body>
 </html>

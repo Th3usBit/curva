@@ -86,7 +86,7 @@ export function mesesAteVencimento(duMes, duFinal) {
 }
 
 /**
- * "E se?": compra hoje, vende no horizonte com a taxa de venda deslocada.
+ * "Simular": compra hoje, vende no horizonte com a taxa de venda deslocada.
  *
  * titulo  item de resumo.titulos
  * opcoes  { valor, meses, choque (fracao), inflacao (fracao a.a.), selic (fracao a.a.) }

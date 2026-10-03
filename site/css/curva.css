@@ -84,29 +84,74 @@ a:hover { text-decoration-thickness: 2px; }
 .pular:focus { left: 8px; }
 .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* ---------- topo ---------- */
+/* ---------- topo e navegacao ----------
+   Computador: uma linha (marca, abas, tema). Celular (< 720px): marca e tema no
+   topo; as abas viram uma barra fixa embaixo, na zona do polegar, com icone e
+   texto e alvo de toque de 56px. A mesma <nav> serve aos dois. */
 .topo {
   position: sticky; top: 0; z-index: 5;
-  background: color-mix(in srgb, var(--plano) 92%, transparent);
-  backdrop-filter: blur(8px);
+  background: color-mix(in srgb, var(--plano) 90%, transparent);
+  backdrop-filter: saturate(1.4) blur(10px);
+  -webkit-backdrop-filter: saturate(1.4) blur(10px);
   border-bottom: 1px solid var(--borda);
 }
-.topo-linha, .abas, main, .faixa, .rodape { max-width: 1120px; margin: 0 auto; padding-left: 16px; padding-right: 16px; }
-.topo-linha { display: flex; align-items: center; gap: 16px; padding-top: 12px; padding-bottom: 6px; }
-.marca { display: flex; align-items: center; gap: 8px; color: var(--acento); text-decoration: none; font-weight: 700; font-size: 1.35rem; letter-spacing: -0.02em; }
+.topo-linha, main, .faixa, .rodape { max-width: 1120px; margin: 0 auto; padding-left: 16px; padding-right: 16px; }
+.topo-linha { display: flex; align-items: center; gap: 24px; min-height: 64px; }
+.marca { display: flex; align-items: center; gap: 8px; color: var(--acento); text-decoration: none; font-weight: 700; font-size: 1.35rem; letter-spacing: -0.02em; min-height: 44px; }
 .marca span { color: var(--tinta); }
-.lema { margin: 0; color: var(--tinta-2); font-size: 0.92rem; flex: 1; }
-.tema { background: none; border: 1px solid var(--borda); color: var(--tinta-2); border-radius: 999px; width: 38px; height: 38px; display: grid; place-items: center; cursor: pointer; }
+.lema { display: none; }
+.tema {
+  margin-left: auto; flex: none;
+  background: none; border: 1px solid var(--borda); color: var(--tinta-2); border-radius: 999px;
+  width: 44px; height: 44px; display: grid; place-items: center; cursor: pointer;
+}
 .tema:hover { color: var(--tinta); background: var(--superficie-2); }
 
-.abas { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; padding-bottom: 0; }
-.abas::-webkit-scrollbar { display: none; }
+.abas { display: flex; gap: 4px; align-self: stretch; }
 .abas a {
-  flex: none; padding: 10px 12px 12px; color: var(--tinta-2); text-decoration: none; font-weight: 500; font-size: 0.95rem;
-  border-bottom: 2px solid transparent;
+  display: flex; align-items: center; gap: 8px; padding: 0 14px;
+  color: var(--tinta-2); text-decoration: none; font-weight: 550; font-size: 0.95rem;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
 }
-.abas a:hover { color: var(--tinta); }
-.abas a[aria-current="page"] { color: var(--tinta); border-bottom-color: var(--acento); }
+.abas a svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.abas a:hover { color: var(--tinta); background: var(--superficie-2); }
+.abas a[aria-current="page"] { color: var(--acento); border-bottom-color: var(--acento); }
+.abas a[aria-current="page"] span { color: var(--tinta); }
+
+@media (max-width: 719px) {
+  /* backdrop-filter no cabecalho viraria o "bloco de contencao" da barra fixa e
+     a prenderia no topo; no celular o cabecalho fica opaco. */
+  .topo { backdrop-filter: none; -webkit-backdrop-filter: none; background: var(--plano); }
+  .topo-linha { min-height: 56px; }
+  .abas {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 6;
+    background: color-mix(in srgb, var(--superficie) 94%, transparent);
+    backdrop-filter: saturate(1.4) blur(10px);
+    -webkit-backdrop-filter: saturate(1.4) blur(10px);
+    border-top: 1px solid var(--borda);
+    padding-bottom: env(safe-area-inset-bottom);
+    gap: 0;
+  }
+  .abas a {
+    flex: 1 1 0; flex-direction: column; justify-content: center; gap: 2px;
+    min-height: 56px; padding: 6px 4px; font-size: 0.75rem; text-align: center; line-height: 1.2;
+    border-bottom: none; border-top: 2px solid transparent; margin: 0;
+  }
+  .abas a[aria-current="page"] { border-top-color: var(--acento); background: var(--acento-fundo); }
+  .abas a svg { width: 22px; height: 22px; }
+  body { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+  /* Filtros numa linha so, rolando de lado, em vez de empilhar 3 linhas. */
+  .filtros {
+    flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+    margin-left: -16px; margin-right: -16px; padding: 2px 16px;
+    scroll-snap-type: x proximity;
+  }
+  .filtros::-webkit-scrollbar { display: none; }
+  .filtros button { flex: none; scroll-snap-align: start; }
+}
+
+.voltar { display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; font-weight: 600; text-decoration: none; }
+h1:focus { outline: none; }
 
 .faixa { color: var(--tinta-2); font-size: 0.88rem; padding-top: 10px; padding-bottom: 2px; }
 .faixa.alerta { color: var(--ruim); font-weight: 600; }
@@ -127,7 +172,7 @@ h2 { font-size: 1.2rem; margin: 32px 0 8px; letter-spacing: -0.01em; }
 
 .filtros, .periodos { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
 .filtros button, .periodos button {
-  font: inherit; font-size: 0.88rem; padding: 6px 12px; border-radius: 999px; cursor: pointer;
+  font: inherit; font-size: 0.9rem; min-height: 40px; padding: 6px 14px; border-radius: 999px; cursor: pointer;
   border: 1px solid var(--borda); background: var(--superficie); color: var(--tinta-2);
 }
 .filtros button:hover, .periodos button:hover { color: var(--tinta); background: var(--superficie-2); }
@@ -145,7 +190,7 @@ th { color: var(--tinta-2); font-weight: 600; font-size: 0.82rem; vertical-align
 .tabela-titulos tbody tr { cursor: pointer; }
 .tabela-titulos tbody tr:hover { background: var(--superficie-2); }
 .tabela-titulos tbody tr[aria-selected="true"] { background: var(--acento-fundo); }
-.tabela-titulos tr.grupo td { background: var(--plano); color: var(--tinta-2); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; cursor: default; padding-top: 14px; }
+.tabela-titulos tr.grupo th { background: var(--plano); color: var(--tinta-2); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; cursor: default; padding-top: 14px; }
 .titulo-nome { font-weight: 600; }
 .titulo-sub { color: var(--tinta-3); font-size: 0.82rem; }
 .queda { color: var(--ruim); }
@@ -207,14 +252,16 @@ figcaption { font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; }
 .formulario small { font-weight: 400; color: var(--tinta-3); font-size: 0.8rem; }
 .formulario select, .formulario input[type="number"], .formulario input[type="date"] {
   font: inherit; font-weight: 400; color: var(--tinta); background: var(--plano);
-  border: 1px solid var(--eixo); border-radius: 8px; padding: 8px 10px; width: 100%; min-width: 0;
+  border: 1px solid var(--eixo); border-radius: 8px; padding: 10px 12px; min-height: 44px; width: 100%; min-width: 0;
+  font-size: 1rem; /* 16px: o iOS nao da zoom ao focar */
 }
 .formulario input[type="range"] { width: 100%; accent-color: var(--acento); }
 .campo-prefixo, .campo-sufixo { display: flex; align-items: center; gap: 6px; }
 .campo-prefixo span, .campo-sufixo span { color: var(--tinta-3); font-weight: 400; flex: none; }
 [hidden] { display: none !important; }
 
-.resultado { margin: 20px 0 4px; }
+.resultado { margin: 24px 0 4px; }
+.heroi-rotulo { margin: 0 0 2px; color: var(--tinta-2); font-weight: 600; font-size: 0.95rem; }
 .heroi { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; }
 .heroi-valor { font-size: clamp(2.4rem, 7vw, 3.4rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; }
 .heroi-delta { font-size: 1.1rem; font-weight: 600; }
@@ -223,7 +270,9 @@ figcaption { font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; }
 .frase { font-size: 1.05rem; max-width: 75ch; color: var(--tinta-2); margin: 8px 0 14px; }
 .frase strong { color: var(--tinta); }
 .comparacoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-.decomposicao { margin-top: 16px; max-width: 520px; }
+.decomposicao { margin-top: 8px; max-width: 520px; }
+.resultado .dados { margin-top: 16px; font-size: 0.95rem; }
+.resultado .dados summary { min-height: 44px; display: flex; align-items: center; color: var(--acento); font-weight: 600; }
 .decomposicao td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
 .decomposicao tr.total td { font-weight: 700; border-top: 2px solid var(--eixo); }
 .erro { color: var(--ruim); font-weight: 600; }
@@ -240,10 +289,8 @@ figcaption { font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; }
 .rodape p { margin: 4px 0; }
 
 @media (max-width: 640px) {
-  .lema { display: none; }
-  .col-prazo, .col-ver { display: none; }
+  .col-vence { display: none; }
   .tabela-titulos td:first-child { white-space: normal; min-width: 9.5em; }
-  .topo-linha { justify-content: space-between; }
   th, td { padding: 8px 6px; }
   .tile-valor { font-size: 1.5rem; }
 }
@@ -253,5 +300,5 @@ figcaption { font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; }
 }
 
 @media print {
-  .topo, .filtros, .periodos, .formulario, .tema { display: none; }
+  .topo, .abas, .filtros, .periodos, .formulario, .tema { display: none; }
 }
