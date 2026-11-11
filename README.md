@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="https://th3usbit.github.io/curva/"><img src="docs/capa.jpg" width="100%" alt="curva: o Tesouro Direto com os dados de hoje. Telas reais do site com o simulador de venda e a lista de títulos."></a>
+<a href="https://th3usbit.github.io/curva/"><img src="docs/capa.jpg" width="100%" alt="curva: o Tesouro Direto com os dados de hoje. Telas reais do site com a curva de juros do dia e o simulador de venda."></a>
 
 Curva de juros, preços e simuladores de todos os títulos do Tesouro Direto, atualizados sozinhos todo dia útil a partir dos dados abertos do Tesouro Nacional. Sem servidor, chave de API ou banco de dados.
 
