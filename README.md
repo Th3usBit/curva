@@ -1,12 +1,14 @@
-# curva
+<div align="center">
 
-**Tesouro Direto com os dados oficiais de hoje.** Curva de juros, preços e simuladores
-de todos os títulos, atualizados sozinhos todo dia útil a partir dos dados abertos do
-Tesouro Nacional. Não usa servidor, chave de API nem banco de dados.
+<a href="https://th3usbit.github.io/curva/"><img src="docs/capa.jpg" width="100%" alt="curva: o Tesouro Direto com os dados de hoje. Telas reais do site com o simulador de venda e a lista de títulos."></a>
 
-**Site:** https://th3usbit.github.io/curva/
+Curva de juros, preços e simuladores de todos os títulos do Tesouro Direto, atualizados sozinhos todo dia útil a partir dos dados abertos do Tesouro Nacional. Sem servidor, chave de API ou banco de dados.
 
-![Simular uma compra](docs/simular.png)
+<a href="https://th3usbit.github.io/curva/"><img src="docs/botao.svg" height="52" alt="Abrir o curva"></a>
+
+[O que tem no site](#o-que-tem-no-site) · [Como funciona](#como-fica-no-ar-sem-servidor) · [O modelo](#o-modelo-validado-contra-o-histórico-inteiro) · [Testes](#testes)
+
+</div>
 
 ## O que tem no site
 
@@ -40,21 +42,11 @@ publica
 Todo título é um conjunto de pagamentos futuros descontados pela taxa do dia, em dias
 úteis (base 252). Para os indexados, o valor corrigido (VNA) não vem no arquivo e é
 **deduzido dos próprios preços**: todos os títulos do mesmo índice no mesmo dia têm de
-concordar sobre ele. O modelo é testado contra os 176.844 preços oficiais desde 2004:
+concordar sobre ele. O modelo é testado contra todos os preços oficiais desde 2004, e o resultado é recalculado a cada publicação.
+A tabela atualizada, por tipo de título, está em [Como os números são calculados](https://th3usbit.github.io/curva/#metodologia).
 
-| Título | Preços | Erro mediano | Até 1 centavo | Até 10 centavos |
-|---|---:|---:|---:|---:|
-| Tesouro Prefixado | 28.145 | R$ 0,005 | 100,0% | 100,0% |
-| Tesouro Prefixado com Juros Semestrais | 27.281 | R$ 0,005 | 99,8% | 99,8% |
-| Tesouro IPCA+ | 18.889 | R$ 0,003 | 98,9% | 99,9% |
-| Tesouro IPCA+ com Juros Semestrais | 44.036 | R$ 0,003 | 97,6% | 99,9% |
-| Tesouro Renda+ Aposentadoria Extra | 7.344 | R$ 0,006 | 90,0% | 100,0% |
-| Tesouro Educa+ | 13.939 | R$ 0,003 | 99,6% | 100,0% |
-| Tesouro IGPM+ com Juros Semestrais | 15.794 | R$ 0,002 | 96,0% | 96,9% |
-| Tesouro Selic | 21.416 | R$ 0,003 | 71,8% | 74,5% |
-
-O Tesouro Selic fica atrás porque a taxa é publicada com duas casas, e esse arredondamento
-explica o erro restante. Os outros casos estão em [Como os números são calculados](https://th3usbit.github.io/curva/#metodologia).
+O Tesouro Selic é o que mais se afasta, porque a taxa é publicada com duas casas, e esse arredondamento
+explica o erro restante.
 
 ### O que os dados revelaram
 
