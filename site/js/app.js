@@ -237,8 +237,64 @@ function iniciarHoje() {
     $("#detalhe-nota").textContent = notas[t.indexador];
   }
 
+  // A curva de hoje: taxa de cada titulo a venda pelo vencimento.
+  const CURVAS = {
+    pre: {
+      rotulo: "Prefixado", nome: "no Tesouro Prefixado",
+      series: [["LTN", "Sem juros semestrais", 1, "linha+pontos"], ["NTN-F", "Com juros semestrais", 2, "pontos"]],
+      eixo: (v) => `${F.num(v, 1)}%`, dica: (v) => F.taxa(v),
+    },
+    ipca: {
+      rotulo: "IPCA+", nome: "acima da inflação no Tesouro IPCA+",
+      series: [["NTN-B Principal", "Sem juros semestrais", 1, "linha+pontos"], ["NTN-B", "Com juros semestrais", 2, "pontos"]],
+      eixo: (v) => `${F.num(v, 1)}%`, dica: (v) => `IPCA + ${F.taxa(v)}`,
+    },
+  };
+  let tipoCurva = "pre";
+  botoesFiltro($("#curva-tipos"), Object.entries(CURVAS).map(([k, c]) => [k, c.rotulo]), tipoCurva, (v) => { tipoCurva = v; curva(); });
+
+  function curva() {
+    const c = CURVAS[tipoCurva];
+    const porCodigo = (codigo) => resumo.titulos
+      .filter((t) => t.codigo === codigo && t.a_venda && Number.isFinite(t.taxa_compra))
+      .sort((a, b) => a.vencimento.localeCompare(b.vencimento));
+    const principal = porCodigo(c.series[0][0]);
+    if (principal.length) {
+      const taxas = principal.map((t) => t.taxa_compra);
+      const [curto, longo] = [principal[0], principal.at(-1)];
+      const maior = Math.max(...taxas), menor = Math.min(...taxas);
+      const anosDaMaior = principal.filter((t) => t.taxa_compra === maior).map((t) => t.vencimento.slice(0, 4));
+      $("#curva-numero").textContent = `${F.taxa(menor)} a ${F.taxa(maior)}`;
+      $("#curva-frase").textContent =
+        `ao ano ${c.nome}, conforme o vencimento (de ${curto.vencimento.slice(0, 4)} a ${longo.vencimento.slice(0, 4)}). ` +
+        (maior === menor ? "Hoje, todos pagam o mesmo."
+          : longo.taxa_compra === maior ? "Hoje, quem empresta por mais tempo recebe mais."
+            : curto.taxa_compra === maior ? "Hoje, os vencimentos mais curtos pagam mais."
+              : `Hoje, a maior taxa é a ${anosDaMaior.length > 1 ? "dos vencimentos de" : "do vencimento de"} ${anosDaMaior.join(" e ")}.`);
+    }
+    const series = c.series.map(([codigo, nome, cor, estilo]) => ({
+      nome, cor, estilo,
+      pontos: porCodigo(codigo).map((t) => [t.vencimento, t.taxa_compra, nomeCurto(t), t.id]),
+    }));
+    const todos = series.flatMap((s) => s.pontos);
+    desenhar($("#g-curva"), {
+      series,
+      x: { tipo: "data", formato: (iso) => `vence em ${F.data(iso)}` },
+      y: { formato: (v, dica) => (dica ? c.dica(v) : c.eixo(v)) },
+      dica: "ponto",
+      animar: true,
+      aoEscolher: (p) => escolher(p[3]),
+      descricao: `Curva de juros de hoje: taxa por ano de cada ${c.rotulo} à venda, pelo vencimento`,
+      tabela: {
+        colunas: ["Título", "Vence em", "Rende por ano"],
+        linhas: todos.sort((a, b) => a[0].localeCompare(b[0])).map((p) => [p[2], F.data(p[0]), c.dica(p[1])]),
+      },
+    });
+  }
+
+  curva();
   tabela();
-  redesenhar.hoje = detalhe;
+  redesenhar.hoje = () => { curva(); detalhe(); };
 }
 
 // ---------- SIMULAR ----------

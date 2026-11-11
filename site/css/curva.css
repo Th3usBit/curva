@@ -152,6 +152,8 @@ a:hover { text-decoration-thickness: 2px; }
 
 .voltar { display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; font-weight: 600; text-decoration: none; }
 h1:focus { outline: none; }
+/* link direto (#hoje, #simular...) nao esconde o titulo atras do cabecalho fixo */
+.aba { scroll-margin-top: 72px; }
 
 .faixa { color: var(--tinta-2); font-size: 0.88rem; padding-top: 10px; padding-bottom: 2px; }
 .faixa.alerta { color: var(--ruim); font-weight: 600; }
@@ -204,6 +206,24 @@ th { color: var(--tinta-2); font-weight: 600; font-size: 0.82rem; vertical-align
 .dupla { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; }
 figure { margin: 16px 0 0; min-width: 0; }
 figcaption { font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; }
+
+/* ---------- a curva de hoje (abertura da pagina inicial) ---------- */
+.curva-hoje {
+  background: var(--superficie); border: 1px solid var(--borda); border-radius: var(--raio);
+  padding: 20px 20px 8px; margin: 0 0 28px;
+}
+.curva-cab { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; align-items: flex-start; }
+.curva-cab h2 { margin: 0; font-size: 0.82rem; font-weight: 650; text-transform: uppercase; letter-spacing: 0.06em; color: var(--tinta-2); }
+.curva-numero {
+  margin: 4px 0 0; font-size: clamp(2.1rem, 6vw, 3.4rem); font-weight: 750; letter-spacing: -0.035em; line-height: 1.05;
+  font-variant-numeric: tabular-nums; color: var(--tinta);
+}
+.curva-frase { margin: 6px 0 0; color: var(--tinta-2); max-width: 60ch; }
+.curva-cab .periodos { margin: 0; }
+/* espaco do grafico reservado antes dos dados: a pagina nao pula quando ele chega */
+.g-curva { min-height: 300px; margin-top: 8px; }
+.curva-hoje .nota { margin: 4px 0 10px; }
+.grafico .captura.escolhe { cursor: pointer; }
 
 /* ---------- graficos ---------- */
 .grafico { position: relative; }
@@ -297,7 +317,10 @@ figcaption { font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; }
 
 @media (prefers-reduced-motion: no-preference) {
   .abas a, .filtros button, .tabela-titulos tbody tr { transition: background-color 0.12s, color 0.12s, border-color 0.12s; }
+  /* a linha da curva se desenha da esquerda para a direita; os pontos ja estao la */
+  .grafico.animar .linha[pathLength] { stroke-dasharray: 1; stroke-dashoffset: 1; animation: tracar 0.9s cubic-bezier(0.25, 1, 0.5, 1) 0.1s forwards; }
 }
+@keyframes tracar { to { stroke-dashoffset: 0; } }
 
 @media print {
   .topo, .abas, .filtros, .periodos, .formulario, .tema { display: none; }

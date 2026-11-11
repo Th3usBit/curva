@@ -53,6 +53,18 @@
     <section id="hoje" class="aba" aria-labelledby="t-hoje">
       <h1 id="t-hoje" tabindex="-1">Títulos do Tesouro Direto hoje</h1>
       <p class="intro">Quanto cada título rende por ano e quanto custa hoje. Escolha um título para ver como o preço dele mudou.</p>
+      <section class="curva-hoje" aria-labelledby="t-curva">
+        <div class="curva-cab">
+          <div>
+            <h2 id="t-curva">A curva de hoje</h2>
+            <p class="curva-numero" id="curva-numero">&nbsp;</p>
+            <p class="curva-frase" id="curva-frase">&nbsp;</p>
+          </div>
+          <div class="periodos" role="group" aria-label="Tipo de título" id="curva-tipos"></div>
+        </div>
+        <div id="g-curva" class="g-curva"></div>
+        <p class="nota">Cada ponto é um título à venda hoje, na altura da taxa que ele paga. Toque num ponto para ver como o preço dele mudou.<span class="vh"> No teclado, chegue ao gráfico com Tab, ande pelos pontos com as setas e abra um título com Enter.</span></p>
+      </section>
       <div class="filtros" role="group" aria-label="Filtrar por tipo" id="filtros"></div>
       <div class="painel" id="detalhe" hidden>
         <div class="painel-cab">
@@ -148,7 +160,7 @@
 
       <h2>O modelo de preços</h2>
       <p>Todo título é um conjunto de pagamentos futuros descontados pela taxa do dia, contando os dias úteis (base 252) pelo calendário nacional. Para os títulos atrelados a um índice, o valor corrigido (VNA) não vem no arquivo, mas sai dos próprios preços: todos os títulos do mesmo índice no mesmo dia têm de concordar sobre ele. Antes de publicar, o modelo é testado contra <strong>todos</strong> os preços oficiais do histórico:</p>
-      <div class="rolagem"><table id="tabela-validacao"><thead><tr><th scope="col">Título</th><th scope="col" class="num">Preços testados</th><th scope="col" class="num">Erro mediano</th><th scope="col" class="num">Até 1 centavo</th><th scope="col" class="num">Até 10 centavos</th></tr></thead><tbody></tbody></table></div>
+      <div class="rolagem" tabindex="0" role="region" aria-label="Validação do modelo"><table id="tabela-validacao"><thead><tr><th scope="col">Título</th><th scope="col" class="num">Preços testados</th><th scope="col" class="num">Erro mediano</th><th scope="col" class="num">Até 1 centavo</th><th scope="col" class="num">Até 10 centavos</th></tr></thead><tbody></tbody></table></div>
 
       <h2>O que os dados revelaram</h2>
       <ul>

@@ -6,6 +6,8 @@
 //     y: { formato, zero },                       // zero: incluir o 0 no eixo
 //     refs: [{ eixo: "x" | "y", valor, rotulo }], // linhas de referencia
 //     dica: "x" | "ponto",                        // cursor por data (todas as series) ou ponto mais proximo
+//     aoEscolher: (ponto) => {},                  // com dica "ponto": clique ou Enter no ponto
+//     animar,                                     // linha se desenha ao aparecer (CSS, so sem reduced-motion)
 //     tabela: { colunas, linhas },                // tabela acessivel com os mesmos dados
 //     descricao,                                  // texto para leitores de tela
 //   })
@@ -77,6 +79,7 @@ function isoDe(t) {
 export function desenhar(alvo, cfg) {
   alvo.replaceChildren();
   alvo.classList.add("grafico");
+  alvo.classList.toggle("animar", Boolean(cfg.animar));
   const series = cfg.series.filter((s) => s.pontos.length);
 
   if (series.length > 1) {
@@ -128,7 +131,7 @@ function plotar(caixa, dica, series, cfg) {
   const W = Math.max(280, caixa.clientWidth);
   const H = cfg.altura || Math.round(Math.min(360, Math.max(220, W * 0.5)));
   const tx = cfg.x.tipo;
-  const pts = series.map((s) => s.pontos.map((p) => [paraNumero(tx, p[0]), p[1], p[2]]));
+  const pts = series.map((s) => s.pontos.map((p) => [paraNumero(tx, p[0]), ...p.slice(1)]));
 
   let xmin = Infinity, xmax = -Infinity, ymin = Infinity, ymax = -Infinity;
   for (const lista of pts) for (const [x, y] of lista) {
@@ -187,7 +190,8 @@ function plotar(caixa, dica, series, cfg) {
     if (s.estilo !== "pontos") {
       let d = "";
       lista.forEach(([x, y], k) => { d += `${k ? "L" : "M"}${sx(x).toFixed(1)},${sy(y).toFixed(1)}`; });
-      el("path", { d, class: `linha${s.tracejado ? " tracejada" : ""}` }, g);
+      // pathLength=1 deixa o CSS desenhar a linha de 0 a 100% sem medir o caminho
+      el("path", { d, class: `linha${s.tracejado ? " tracejada" : ""}`, ...(cfg.animar && !s.tracejado ? { pathLength: 1 } : {}) }, g);
     }
     if (s.estilo === "pontos" || s.estilo === "linha+pontos") {
       for (const [x, y] of lista) el("circle", { cx: sx(x), cy: sy(y), r: 4.5, class: "ponto" }, g);
@@ -198,7 +202,12 @@ function plotar(caixa, dica, series, cfg) {
   const linhaCursor = el("line", { y1: topo, y2: base }, cursor);
   const marcas = series.map((s) => el("circle", { r: 5, class: "marca", style: `--cor: var(--s${s.cor})` }, cursor));
 
-  const capt = el("rect", { x: esq, y: topo, width: dir - esq, height: base - topo, class: "captura", tabindex: 0 }, svg);
+  const escolhe = cfg.dica === "ponto" && cfg.aoEscolher;
+  const capt = el("rect", {
+    x: esq, y: topo, width: dir - esq, height: base - topo, tabindex: 0,
+    class: `captura${escolhe ? " escolhe" : ""}`,
+  }, svg);
+  let ultimo = null;   // ponto sob o cursor (modo "ponto")
   caixa.insertBefore(svg, dica);
 
   const fmtX = (x) => (tx === "data" ? cfg.x.formato(isoDe(x)) : cfg.x.formato(x));
@@ -231,6 +240,7 @@ function plotar(caixa, dica, series, cfg) {
         if (!melhor || d < melhor.d) melhor = { d, s, p, i };
       }));
       if (!melhor || melhor.d > 40) { esconder(); return; }
+      ultimo = melhor.p;
       cx = melhor.p[0];
       linhas.push(melhor);
       marcas.forEach((m, i) => {
@@ -266,6 +276,7 @@ function plotar(caixa, dica, series, cfg) {
     dica.style.top = `${topo + 4}px`;
   }
   function esconder() {
+    ultimo = null;
     cursor.setAttribute("visibility", "hidden");
     dica.hidden = true;
   }
@@ -276,12 +287,26 @@ function plotar(caixa, dica, series, cfg) {
   capt.addEventListener("pointermove", (ev) => mostrar(...ponto(ev)));
   capt.addEventListener("pointerdown", (ev) => mostrar(...ponto(ev)));
   capt.addEventListener("pointerleave", esconder);
-  // Teclado: setas percorrem o eixo X.
-  let kx = null;
+  if (escolhe) capt.addEventListener("click", (ev) => { mostrar(...ponto(ev)); if (ultimo) cfg.aoEscolher(ultimo); });
+  // Teclado: setas percorrem o eixo X (no modo "ponto", de ponto em ponto); Enter escolhe.
+  const ordenados = pts.flat().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  let kx = null, ki = -1;
   capt.addEventListener("keydown", (ev) => {
+    if (escolhe && (ev.key === "Enter" || ev.key === " ")) {
+      ev.preventDefault();
+      if (ultimo) cfg.aoEscolher(ultimo);
+      return;
+    }
     if (ev.key !== "ArrowLeft" && ev.key !== "ArrowRight") return;
     ev.preventDefault();
-    kx = kx === null ? dir : Math.min(dir, Math.max(esq, kx + (ev.key === "ArrowRight" ? 1 : -1) * (dir - esq) / 60));
+    const passo = ev.key === "ArrowRight" ? 1 : -1;
+    if (cfg.dica === "ponto") {
+      ki = ki < 0 ? (passo > 0 ? 0 : ordenados.length - 1) : Math.min(ordenados.length - 1, Math.max(0, ki + passo));
+      const [x, y] = ordenados[ki];
+      mostrar(sx(x), sy(y));
+      return;
+    }
+    kx = kx === null ? dir : Math.min(dir, Math.max(esq, kx + passo * (dir - esq) / 60));
     mostrar(kx, (topo + base) / 2);
   });
   capt.addEventListener("blur", esconder);
@@ -295,6 +320,10 @@ function tabela({ colunas, linhas, titulo = "Ver os dados em tabela" }) {
   det.appendChild(sum);
   const rolagem = document.createElement("div");
   rolagem.className = "rolagem";
+  // area com rolagem precisa receber foco para rolar pelo teclado (WCAG 2.1.1)
+  rolagem.tabIndex = 0;
+  rolagem.setAttribute("role", "region");
+  rolagem.setAttribute("aria-label", titulo.replace(/^Ver /, ""));
   const t = document.createElement("table");
   const thead = t.createTHead().insertRow();
   for (const c of colunas) {
